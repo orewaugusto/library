@@ -57,4 +57,5 @@ class Client:
         # show total result
         result += f"Total: {total_amount}\n"
         result += f"Points: {frequent_renter_points}"
+        
         return result
