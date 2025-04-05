@@ -14,26 +14,6 @@ class Rental:
         self.book = book
         self.days_rented = days_rented
 
-    def get_charge(self) -> float:
-        amount = 0
-        if self.book.price_code == Book.REGULAR:
-            amount += 2
-            if self.days_rented > 2:
-                amount += (self.days_rented - 2) * 1.5
-        elif self.book.price_code == Book.NEW_RELEASE:
-            amount += self.days_rented * 3
-        elif self.book.price_code == Book.CHILDREN:
-            amount += 1.5
-            if self.days_rented > 3:
-                amount += (self.days_rented - 3) * 1.5
-        return amount
-
-    def get_frequent_renter_points(self) -> int:
-        points = 1
-        if self.book.price_code == Book.NEW_RELEASE and self.days_rented > 1:
-            points += 1
-        return points
-
 
 class Client:
 
@@ -45,16 +25,36 @@ class Client:
         self.rentals.append(rental)
 
     def statement(self) -> str:
+
         total_amount = 0
         frequent_renter_points = 0
         result = f"Rental summary for {self.name}\n"
-
+        
         for rental in self.rentals:
-            amount = rental.get_charge()
-            frequent_renter_points += rental.get_frequent_renter_points()
+            amount = 0
+
+            # determine amounts for each line
+            if rental.book.price_code == Book.REGULAR:
+                amount += 2
+                if rental.days_rented > 2:
+                    amount += (rental.days_rented - 2) * 1.5
+            elif rental.book.price_code == Book.NEW_RELEASE:
+                amount += rental.days_rented * 3
+            elif rental.book.price_code == Book.CHILDREN:
+                amount += 1.5
+                if rental.days_rented > 3:
+                    amount += (rental.days_rented - 3) * 1.5
+
+            # add frequent renter points
+            frequent_renter_points += 1
+            if rental.book.price_code == Book.NEW_RELEASE and rental.days_rented > 1:
+                frequent_renter_points += 1
+
+            # show each rental result
             result += f"- {rental.book.title}: {amount}\n"
             total_amount += amount
-
+        
+        # show total result
         result += f"Total: {total_amount}\n"
         result += f"Points: {frequent_renter_points}"
         return result
