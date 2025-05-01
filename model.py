@@ -24,6 +24,11 @@ class Book:
         else:
             return 0.0
 
+    def get_frequent_renter_points(self, days_rented: int) -> int:
+        if self.price_code == Book.NEW_RELEASE and days_rented > 1:
+            return 2
+        return 1
+
 
 class Rental:
     def __init__(self, book: Book, days_rented: int):
@@ -32,6 +37,9 @@ class Rental:
 
     def get_charge(self) -> float:
         return self.book.get_charge(self.days_rented)
+
+    def get_frequent_renter_points(self) -> int:
+        return self.book.get_frequent_renter_points(self.days_rented)
 
 
 class Client:
@@ -51,17 +59,12 @@ class Client:
         
         for rental in self.rentals:
             this_amount = rental.get_charge()
+            points = rental.get_frequent_renter_points()
 
-            # add frequent renter points
-            frequent_renter_points += 1
-            if rental.book.price_code == Book.NEW_RELEASE and rental.days_rented > 1:
-                frequent_renter_points += 1
-
-            # show each rental result
+            frequent_renter_points += points
             result += f"- {rental.book.title}: {this_amount}\n"
             total_amount += this_amount
         
-        # show total result
         result += f"Total: {total_amount}\n"
         result += f"Points: {frequent_renter_points}"
         
